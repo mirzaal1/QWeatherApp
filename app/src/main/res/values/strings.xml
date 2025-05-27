@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">QWeatherApp</string>
+    <string name="humidity">Humidity</string>
+    <string name="wind">wind</string>
+    <string name="visibility">Visibility</string>
+    <string name="select_location">Select Location</string>
+    <string name="loading">Loading..</string>
+    <string name="error_unknown">Unknown Error</string>
+    <string name="select_location_prompt">Select city from menu to show weather</string>
+    <string name="retry">Retry</string>
+    <string name="no_data">Weather Data Not Found</string>
+    <string name="daily_forecast">Daily Forecast</string>
+    <string name="hourly_forecast">Hourly Forecast</string>
+    <string name="menu">menu</string>
+    <string name="change_language">Change Language</string>
 </resources>

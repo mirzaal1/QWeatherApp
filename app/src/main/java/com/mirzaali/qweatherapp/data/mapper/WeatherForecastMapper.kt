@@ -2,7 +2,7 @@ package com.mirzaali.qweatherapp.data.mapper
 
 import com.mirzaali.qweatherapp.data.model.CurrentWeatherDto
 import com.mirzaali.qweatherapp.data.model.DailyWeatherDto
-import com.mirzaali.qweatherapp.data.model.HourlyDetailDto
+import com.mirzaali.qweatherapp.data.model.HourlyDataDto
 import com.mirzaali.qweatherapp.data.model.WeatherForecastResponseDto
 import com.mirzaali.qweatherapp.data.model.WeatherResult
 import com.mirzaali.qweatherapp.domain.model.CityInfo
@@ -11,19 +11,14 @@ import com.mirzaali.qweatherapp.domain.model.DailyWeather
 import com.mirzaali.qweatherapp.domain.model.HourlyWeather
 import com.mirzaali.qweatherapp.domain.model.WeatherForecast
 
-
 fun WeatherForecastResponseDto.toDomain(): WeatherForecast {
     val result = Response.result
 
     return WeatherForecast(
         city = result.toCityInfo(),
-        current = result.current_weather.toCurrentWeather(),
-        daily = result.daily_weather.map { it.toDailyWeather() },
-        hourly = result.hourly_data.flatMap { day ->
-            day.day_details.map {
-                it.toHourlyWeather(day.date)
-            }
-        }
+        current = result.current_weather.toDomain(),
+        daily = result.daily_weather.map { it.toDomain() },
+        hourly = result.hourly_data?.flatMap { it.toHourlyList() } ?: emptyList()
     )
 }
 
@@ -41,7 +36,7 @@ private fun WeatherResult.toCityInfo(): CityInfo {
     )
 }
 
-private fun CurrentWeatherDto.toCurrentWeather(): CurrentWeather {
+private fun CurrentWeatherDto.toDomain(): CurrentWeather {
     return CurrentWeather(
         temperature = temperature,
         feelsLike = feels_like,
@@ -62,7 +57,7 @@ private fun CurrentWeatherDto.toCurrentWeather(): CurrentWeather {
     )
 }
 
-private fun DailyWeatherDto.toDailyWeather(): DailyWeather {
+private fun DailyWeatherDto.toDomain(): DailyWeather {
     return DailyWeather(
         timestamp = timestamp,
         temperature = temperature,
@@ -90,17 +85,19 @@ private fun DailyWeatherDto.toDailyWeather(): DailyWeather {
     )
 }
 
-private fun HourlyDetailDto.toHourlyWeather(date: String): HourlyWeather {
-    return HourlyWeather(
-        date = date,
-        time = time,
-        temperature = temperature,
-        humidity = humidity,
-        weatherType = weather_type,
-        weatherTypeAr = weather_type_ar,
-        weatherIcon = weather_icon,
-        timestamp = timestamp,
-        windSpeed = wind_power,
-        windDirection = wind_direction
-    )
+private fun HourlyDataDto.toHourlyList(): List<HourlyWeather> {
+    return day_details.map {
+        HourlyWeather(
+            date = date,
+            time = it.time,
+            temperature = it.temperature,
+            humidity = it.humidity,
+            weatherType = it.weather_type,
+            weatherTypeAr = it.weather_type_ar,
+            weatherIcon = it.weather_icon,
+            timestamp = it.timestamp,
+            windSpeed = it.wind_power,
+            windDirection = it.wind_direction
+        )
+    }
 }

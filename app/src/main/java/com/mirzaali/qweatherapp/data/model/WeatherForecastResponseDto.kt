@@ -1,6 +1,5 @@
 package com.mirzaali.qweatherapp.data.model
 
-
 data class WeatherForecastResponseDto(
     val Response: WeatherResultWrapper
 )
@@ -13,7 +12,7 @@ data class WeatherResultWrapper(
 data class WeatherResult(
     val current_weather: CurrentWeatherDto,
     val daily_weather: List<DailyWeatherDto>,
-    val hourly_data: List<HourlyDataDto>,
+    val hourly_data: List<HourlyDataDto>? = null,
     val city_id: Int,
     val name: String,
     val name_ar: String,
@@ -28,22 +27,31 @@ data class WeatherResult(
 data class CurrentWeatherDto(
     val time: Long,
     val temperature: Double,
+    val temperature_unit: String,
     val weather_type: String,
     val weather_type_ar: String,
     val weather_icon: String,
     val humidity: Int,
+    val humidity_unit: String,
     val wind_power: Double,
+    val wind_power_unit: String,
     val wind_direction: Int,
+    val wind_direction_text: String,
+    val wind_direction_text_ar: String,
     val visibility: Int,
+    val visibility_unit: String,
     val sunrise: Long,
     val sunset: Long,
     val feels_like: Double,
+    val feels_like_unit: String,
     val temperature_min: Double,
     val temperature_max: Double,
     val clouds: Int,
     val pressure: Int,
-    val rain: Any?,
-    val uv_index: Int
+    val pressure_unit: String,
+    val rain: Double,
+    val rain_unit: String,
+    val uv_index: String
 )
 
 data class DailyWeatherDto(
@@ -60,16 +68,24 @@ data class DailyWeatherDto(
     val sunrise: Long,
     val sunset: Long,
     val humidity: Int,
+    val humidity_min: String?,
     val pressure: Int,
     val clouds: Int,
     val pop: Double,
-    val rain: Double?,
+    val rain: Double,
     val wind_speed: Double,
     val wind_direction: Int,
     val weather_type: String,
     val weather_type_ar: String,
     val weather_icon: String,
-    val timestamp: Long
+    val timestamp: Long,
+    val date: String,
+    val temperature_unit: String,
+    val humidity_unit: String,
+    val feels_like_unit: String,
+    val pressure_unit: String,
+    val rain_unit: String,
+    val wind_speed_unit: String
 )
 
 data class HourlyDataDto(
@@ -83,9 +99,20 @@ data class HourlyDetailDto(
     val humidity: Int,
     val weather_type: String,
     val weather_type_ar: String,
-    val weather_icon: String,
+    val weather_icon: String? = null,
     val timestamp: Long,
     val time_hr_qatar: String,
     val wind_power: Double,
-    val wind_direction: Int
+    val wind_direction: Int,
+    val temperature_unit: String? = null,
+    val humidity_unit: String? = null,
+    val warning_text: String? = null,
+    val warning_text_ar: String? = null,
+    val rain: Double? = null,
+    val pressure: Int? = null,
+    val visibility: Int? = null,
+    val visibility_unit: String? = null,
+    val pressure_unit: String? = null,
+    val rain_unit: String? = null,
+    val wind_power_unit: String? = null
 )

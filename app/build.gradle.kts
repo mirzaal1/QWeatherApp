@@ -6,6 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.kapt")
 }
 
+
 android {
     namespace = "com.mirzaali.qweatherapp"
     compileSdk = 35
@@ -28,7 +29,15 @@ android {
                 "proguard-rules.pro"
             )
         }
+        debug {
+            isDebuggable = true
+        }
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -66,8 +75,10 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp.logging)
+    implementation(libs.timber)
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+
 
 }

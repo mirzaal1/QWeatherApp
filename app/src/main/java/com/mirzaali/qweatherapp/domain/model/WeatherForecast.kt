@@ -36,7 +36,7 @@ data class CurrentWeather(
     val temperatureMax: Double,
     val clouds: Int,
     val pressure: Int,
-    val uvIndex: Int
+    val uvIndex: String
 )
 
 data class DailyWeather(
@@ -72,7 +72,7 @@ data class HourlyWeather(
     val humidity: Int,
     val weatherType: String,
     val weatherTypeAr: String,
-    val weatherIcon: String,
+    val weatherIcon: String?,
     val timestamp: Long,
     val windSpeed: Double,
     val windDirection: Int

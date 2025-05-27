@@ -11,7 +11,7 @@ data class CityResponseWrapper(
 )
 
 data class CityResult(
-    val cities: CitiesByRegion
+    val cities: Map<String, List<CityDto>> // Dynamic keys like "qatar", "world"
 )
 
 data class CitiesByRegion(
