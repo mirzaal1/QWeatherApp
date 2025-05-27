@@ -34,15 +34,12 @@ class WeatherViewModel @Inject constructor(
     fun loadForecast(cityId: Int) {
         viewModelScope.launch {
             _uiState.value = WeatherUiState.Loading
-
-            val forecast = getWeatherForecast(cityId)
+            try {
+                val forecast = getWeatherForecast(cityId)
                 _uiState.value = WeatherUiState.ForecastLoaded(forecast)
-//            try {
-//                val forecast = getWeatherForecast(cityId)
-//                _uiState.value = WeatherUiState.ForecastLoaded(forecast)
-//            } catch (e: Exception) {
-//                _uiState.value = WeatherUiState.Error(e.message)
-//            }
+            } catch (e: Exception) {
+                _uiState.value = WeatherUiState.Error(e.message)
+            }
         }
     }
 }

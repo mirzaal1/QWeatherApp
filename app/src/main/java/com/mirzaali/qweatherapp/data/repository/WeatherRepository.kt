@@ -1,4 +1,4 @@
-package com.mirzaali.qweatherapp.domain.repository
+package com.mirzaali.qweatherapp.data.repository
 
 import com.mirzaali.qweatherapp.domain.model.City
 import com.mirzaali.qweatherapp.domain.model.WeatherForecast

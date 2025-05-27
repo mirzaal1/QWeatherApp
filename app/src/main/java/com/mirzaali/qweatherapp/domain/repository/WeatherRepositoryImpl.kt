@@ -1,10 +1,10 @@
-package com.mirzaali.qweatherapp.data.repository
+package com.mirzaali.qweatherapp.domain.repository
 
 import com.mirzaali.qweatherapp.data.api.WeatherApiService
 import com.mirzaali.qweatherapp.data.mapper.toDomain
+import com.mirzaali.qweatherapp.data.repository.WeatherRepository
 import com.mirzaali.qweatherapp.domain.model.City
 import com.mirzaali.qweatherapp.domain.model.WeatherForecast
-import com.mirzaali.qweatherapp.domain.repository.WeatherRepository
 import javax.inject.Inject
 
 
