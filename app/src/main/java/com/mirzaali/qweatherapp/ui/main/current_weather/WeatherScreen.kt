@@ -37,6 +37,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -48,99 +49,24 @@ import com.mirzaali.qweatherapp.ui.components.CurrentWeatherCard
 import com.mirzaali.qweatherapp.ui.components.LanguageToggleButton
 import com.mirzaali.qweatherapp.ui.components.LocationPickerBottomSheet
 
-/*
-
 @Composable
 fun MainScreen(
     viewModel: WeatherViewModel = hiltViewModel(),
     onMenuClick: () -> Unit,
     onCardClick: () -> Unit
 ) {
-    val uiState = viewModel.uiState.value
-    var showLocationPicker by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        viewModel.loadCities()
-        viewModel.loadLastCityForecast()
-    }
-
-    if (showLocationPicker) {
-        when (uiState) {
-            is WeatherUiState.CitiesLoaded -> {
-                LocationPickerBottomSheet(
-                    cities = uiState.cities,
-                    onDismiss = { showLocationPicker = false },
-                    onCitySelected = { city ->
-                        viewModel.saveSelectedCity(city.id)
-                        viewModel.loadForecast(city.id)
-                        showLocationPicker = false
-                    }
-                )
-            }
-            else -> {
-                showLocationPicker = false // Dismiss if not ready
-            }
-        }
-    }
-
-    Scaffold(
-        topBar = {
-            WeatherTopAppBar(
-                title = when (uiState) {
-                    is WeatherUiState.ForecastLoaded -> uiState.forecast.city.name
-                    else -> stringResource(R.string.app_name)
-                },
-                onMenuClick = onMenuClick,
-                onLocationClick = { showLocationPicker = true }
-            )
-        }
-    ) { padding ->
-        Box(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-        ) {
-            when (uiState) {
-                WeatherUiState.Idle -> WeatherEmptyScreen(
-                    message = stringResource(R.string.loading)
-                )
-
-                WeatherUiState.Loading -> WeatherLoadingScreen()
-
-                is WeatherUiState.Error -> WeatherErrorScreen(
-                    message = uiState.message ?: stringResource(R.string.error_unknown),
-                    onRetry = { viewModel.loadCities() }
-                )
-
-                is WeatherUiState.ForecastLoaded -> WeatherContent(
-                    forecast = uiState.forecast,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    onCardClick()
-                }
-
-                is WeatherUiState.CitiesLoaded -> WeatherEmptyScreen(
-                    message = stringResource(R.string.select_location_prompt)
-                )
-            }
-        }
-    }
-}
-*/
-
-
-@Composable
-fun MainScreen(
-    viewModel: WeatherViewModel = hiltViewModel(),
-    onMenuClick: () -> Unit,
-    onCardClick: () -> Unit
-) {
+    val currentLocale = LocalConfiguration.current.locale
     val forecastState = viewModel.forecastState.value
     val citiesState = viewModel.citiesState.value
     var showLocationPicker by rememberSaveable { mutableStateOf(false) }
     var initialLoadDone by rememberSaveable { mutableStateOf(false) }
     var autoOpenedSheet by rememberSaveable { mutableStateOf(false) }
 
+    LaunchedEffect(currentLocale) {
+        if (initialLoadDone) {
+            viewModel.reloadDataWithNewLocale(currentLocale)
+        }
+    }
     LaunchedEffect(initialLoadDone) {
         if (!initialLoadDone) {
             viewModel.loadCities()
