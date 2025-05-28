@@ -1,5 +1,6 @@
 package com.mirzaali.qweatherapp.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,20 +33,21 @@ import com.mirzaali.qweatherapp.utils.toFormattedTime
 fun CurrentWeatherCard(
     current: CurrentWeather,
     city: CityInfo,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
+            .padding(16.dp)
+            .clickable { onClick() },
+        elevation = CardDefaults.cardElevation(1.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // City & Weather
             Text(
                 text = city.name,
                 style = MaterialTheme.typography.headlineMedium

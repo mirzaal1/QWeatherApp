@@ -7,16 +7,27 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
+
 class GetWeatherForecastUseCase @Inject constructor(
     private val repository: WeatherRepository
 ) {
     operator fun invoke(cityId: Int): Flow<ResponseResult<WeatherForecast>> = flow {
         emit(ResponseResult.Loading)
-        try {
-            val forecast = repository.getWeatherForecast(cityId)
-            emit(ResponseResult.Success(forecast))
-        } catch (e: Exception) {
-            emit(ResponseResult.Error(e.localizedMessage ?: "Unknown error", e))
+        val cached = repository.getCachedWeatherForecast(cityId)
+        if (cached != null) {
+            emit(ResponseResult.Success(cached))
+        }
+        runCatching {
+            repository.fetchAndCacheForecast(cityId)
+        }.onSuccess {
+            val updated = repository.getCachedWeatherForecast(cityId)
+            if (updated != null) {
+                emit(ResponseResult.Success(updated))
+            }
+        }.onFailure { e ->
+            if (cached == null) {
+                emit(ResponseResult.Error(e.localizedMessage ?: "Unknown error", e))
+            }
         }
     }
 }

@@ -2,9 +2,13 @@ package com.mirzaali.qweatherapp.data.repository
 
 import com.mirzaali.qweatherapp.domain.model.City
 import com.mirzaali.qweatherapp.domain.model.WeatherForecast
+import kotlinx.coroutines.flow.Flow
 
 
 interface WeatherRepository {
-    suspend fun getCities(): List<City>
-    suspend fun getWeatherForecast(cityId: Int): WeatherForecast
+    fun observeCities(): Flow<List<City>>
+    suspend fun fetchAndCacheCities() :List<City>
+    fun observeForecast(cityId: Int): Flow<WeatherForecast>
+    suspend fun getCachedWeatherForecast(cityId: Int): WeatherForecast?
+    suspend fun fetchAndCacheForecast(cityId: Int): WeatherForecast
 }

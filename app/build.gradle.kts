@@ -78,6 +78,12 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.timber)
 
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
+
+    implementation(libs.gson)
+
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
 

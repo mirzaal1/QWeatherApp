@@ -2,18 +2,25 @@ package com.mirzaali.qweatherapp.ui.main
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -36,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mirzaali.qweatherapp.R
+import com.mirzaali.qweatherapp.domain.model.HourlyWeather
 import com.mirzaali.qweatherapp.domain.model.WeatherForecast
 import com.mirzaali.qweatherapp.ui.components.CurrentWeatherCard
 import com.mirzaali.qweatherapp.ui.components.LanguageToggleButton
@@ -44,14 +52,15 @@ import com.mirzaali.qweatherapp.ui.components.LocationPickerBottomSheet
 @Composable
 fun MainScreen(
     viewModel: WeatherViewModel = hiltViewModel(),
-    onMenuClick: () -> Unit = {
-    }
+    onMenuClick: () -> Unit,
+    onCardClick: () -> Unit
 ) {
     val uiState = viewModel.uiState.value
     var showLocationPicker by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.loadCities()
+        viewModel.loadLastCityForecast()
     }
 
     if (showLocationPicker) {
@@ -61,11 +70,13 @@ fun MainScreen(
                     cities = uiState.cities,
                     onDismiss = { showLocationPicker = false },
                     onCitySelected = { city ->
+                        viewModel.saveSelectedCity(city.id)
                         viewModel.loadForecast(city.id)
                         showLocationPicker = false
                     }
                 )
             }
+
             else -> {
                 showLocationPicker = false // Dismiss if not ready
             }
@@ -94,9 +105,11 @@ fun MainScreen(
             }
         }
     ) { padding ->
-        Box(modifier = Modifier
-            .padding(padding)
-            .fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+        ) {
             when (uiState) {
                 WeatherUiState.Idle -> WeatherEmptyScreen(
                     message = stringResource(R.string.loading)
@@ -112,7 +125,9 @@ fun MainScreen(
                 is WeatherUiState.ForecastLoaded -> WeatherContent(
                     forecast = uiState.forecast,
                     modifier = Modifier.fillMaxSize()
-                )
+                ) {
+                    onCardClick()
+                }
 
                 is WeatherUiState.CitiesLoaded -> WeatherEmptyScreen(
                     message = stringResource(R.string.select_location_prompt)
@@ -157,7 +172,8 @@ fun WeatherLoadingScreen() {
 }
 
 @Composable
-fun WeatherErrorScreen(message: String, onRetry: () -> Unit) {
+fun WeatherErrorScreen(message: String,
+                       onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(text = message, color = MaterialTheme.colorScheme.error)
@@ -179,7 +195,8 @@ fun WeatherEmptyScreen(message: String = stringResource(R.string.no_data)) {
 @Composable
 private fun WeatherContent(
     forecast: WeatherForecast,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onCardClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
 
@@ -192,11 +209,59 @@ private fun WeatherContent(
         CurrentWeatherCard(
             current = forecast.current,
             city = forecast.city
+        ) {
+            onCardClick()
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = stringResource(R.string.hourly_forecast),
+            style = MaterialTheme.typography.titleLarge
         )
 
+        HourlyForecastList(forecast.hourly)
 
     }
 }
+
+@Composable
+fun HourlyForecastList(hourly: List<HourlyWeather>) {
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(hourly) { hour ->
+            HourlyForecastItem(hour)
+        }
+    }
+}
+
+@Composable
+fun HourlyForecastItem(hour: HourlyWeather) {
+    Card(
+        modifier = Modifier
+            .width(100.dp)
+            .padding(vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = hour.time, style = MaterialTheme.typography.bodySmall)
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(text = "${hour.temperature.toInt()}°", style = MaterialTheme.typography.bodyLarge)
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(text = hour.weatherType, style = MaterialTheme.typography.bodySmall)
+        }
+    }
+}
+
 
 /*
  Spacer(modifier = Modifier.height(24.dp))
