@@ -1,4 +1,4 @@
-package com.mirzaali.qweatherapp.ui.main
+package com.mirzaali.qweatherapp.ui.main.current_weather
 
 import com.mirzaali.qweatherapp.domain.model.City
 import com.mirzaali.qweatherapp.domain.model.WeatherForecast

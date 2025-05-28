@@ -1,4 +1,4 @@
-package com.mirzaali.qweatherapp.ui.main
+package com.mirzaali.qweatherapp.ui.main.forecast
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -20,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,30 +32,28 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.mirzaali.qweatherapp.R
 import com.mirzaali.qweatherapp.domain.model.DailyWeather
 import com.mirzaali.qweatherapp.ui.components.TopBar
+import com.mirzaali.qweatherapp.ui.main.current_weather.WeatherLoadingScreen
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun ForecastScreen(
-    viewModel: WeatherViewModel = hiltViewModel(),
+    viewModel: ForecastViewModel = hiltViewModel(),
     onBackPress: () -> Unit
 ) {
 
-    val state = viewModel.uiState.value
+    val forecast by viewModel.forecast.collectAsState(initial = null)
 
-    if (state is WeatherUiState.ForecastLoaded) {
-        val forecast = state.forecast
-        val scrollState = rememberScrollState()
-
-        Scaffold(
-            topBar = {
-                TopBar(
-                    title = stringResource(R.string.daily_forecast),
-                    onBackClick = { onBackPress() }
-                )
-            }
-        ) { paddingValues ->
+    Scaffold(
+        topBar = {
+            TopBar(
+                title = stringResource(R.string.daily_forecast),
+                onBackClick = { onBackPress() }
+            )
+        }
+    ) { paddingValues ->
+        if (forecast != null) {
             LazyColumn(
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -62,13 +61,13 @@ fun ForecastScreen(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                items(forecast.daily) { daily ->
+                items(forecast!!.daily) { daily ->
                     DailyForecastItem(daily = daily)
                 }
             }
+        } else {
+            WeatherLoadingScreen()
         }
-    } else {
-        WeatherLoadingScreen()
     }
 }
 

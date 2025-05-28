@@ -1,4 +1,4 @@
-package com.mirzaali.qweatherapp.ui.main
+package com.mirzaali.qweatherapp.ui.main.current_weather
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -90,7 +90,8 @@ fun MainScreen(
                     is WeatherUiState.ForecastLoaded -> uiState.forecast.city.name
                     else -> stringResource(R.string.app_name)
                 },
-                onMenuClick = onMenuClick
+                onMenuClick = onMenuClick,
+                onLocationClick = { showLocationPicker = true }
             )
         },
         floatingActionButton = {
@@ -137,12 +138,14 @@ fun MainScreen(
     }
 }
 
+
 @SuppressLint("ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun WeatherTopAppBar(
     title: String,
-    onMenuClick: () -> Unit
+    onMenuClick: () -> Unit,
+    onLocationClick :() -> Unit
 ) {
     val activity = LocalContext.current as? Activity
     TopAppBar(
@@ -156,6 +159,12 @@ private fun WeatherTopAppBar(
             }
         },
         actions = {
+            IconButton(onClick = onLocationClick) {
+                Icon(
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = stringResource(R.string.select_location)
+                )
+            }
             activity?.let {
                 LanguageToggleButton(it)
             }
@@ -261,92 +270,3 @@ fun HourlyForecastItem(hour: HourlyWeather) {
         }
     }
 }
-
-
-/*
- Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = stringResource(R.string.daily_forecast),
-            style = MaterialTheme.typography.titleLarge
-        )
-
-        DailyForecastList(forecast.daily)
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Hourly Forecast
-        Text(
-            text = stringResource(R.string.hourly_forecast),
-            style = MaterialTheme.typography.titleLarge
-        )
-        HourlyForecastList(forecast.hourly)
-
-@Composable
-fun DailyForecastList(daily: List<DailyWeather>) {
-    val dateFormat = remember { SimpleDateFormat("EEE, MMM d", Locale.getDefault()) }
-
-    Column {
-        daily.forEach { day ->
-            val dateString = dateFormat.format(Date(day.timestamp * 1000))
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                elevation = CardDefaults.cardElevation(2.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = dateString)
-
-                    Text(text = "${day.temperatureMin.toInt()}° / ${day.temperatureMax.toInt()}°")
-
-                    Text(text = day.weatherType)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun HourlyForecastList(hourly: List<HourlyWeather>) {
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(hourly) { hour ->
-            HourlyForecastItem(hour)
-        }
-    }
-}
-
-@Composable
-fun HourlyForecastItem(hour: HourlyWeather) {
-    Card(
-        modifier = Modifier
-            .width(100.dp)
-            .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(2.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = hour.time, style = MaterialTheme.typography.bodySmall)
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(text = "${hour.temperature.toInt()}°", style = MaterialTheme.typography.bodyLarge)
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(text = hour.weatherType, style = MaterialTheme.typography.bodySmall)
-        }
-    }*/
-
