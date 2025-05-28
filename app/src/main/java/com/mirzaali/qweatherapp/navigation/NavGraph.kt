@@ -28,8 +28,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -44,8 +46,14 @@ fun NavGraph(
 ) {
     var isDrawerOpen by rememberSaveable { mutableStateOf(false) }
     val scale by animateFloatAsState(targetValue = if (isDrawerOpen) 0.75f else 1f, label = "scale")
+
+    val layoutDirection = LocalLayoutDirection.current
     val offsetX by animateDpAsState(
-        targetValue = if (isDrawerOpen) 200.dp else 0.dp,
+        targetValue = if (isDrawerOpen) {
+            if (layoutDirection == LayoutDirection.Rtl) -200.dp else 200.dp
+        } else {
+            0.dp
+        },
         label = "offset"
     )
 
