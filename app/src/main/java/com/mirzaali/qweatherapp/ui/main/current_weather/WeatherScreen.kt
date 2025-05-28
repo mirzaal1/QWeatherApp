@@ -67,6 +67,7 @@ fun MainScreen(
             viewModel.reloadDataWithNewLocale(currentLocale)
         }
     }
+
     LaunchedEffect(initialLoadDone) {
         if (!initialLoadDone) {
             viewModel.loadCities()
@@ -123,12 +124,6 @@ fun MainScreen(
                 ) {
                     onCardClick()
                 }
-            }
-
-            if (forecastState !is WeatherUiState.Success && cities != null && cities.isNotEmpty() && !showLocationPicker) {
-                WeatherEmptyScreen(
-                    message = stringResource(R.string.select_location_prompt)
-                )
             }
         }
     }
