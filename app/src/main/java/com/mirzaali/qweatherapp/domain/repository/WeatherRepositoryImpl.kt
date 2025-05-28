@@ -12,6 +12,7 @@ import com.mirzaali.qweatherapp.domain.model.WeatherForecast
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -34,15 +35,64 @@ class WeatherRepositoryImpl @Inject constructor(
         return all
     }
 
-    override fun observeForecast(cityId: Int): Flow<WeatherForecast> {
+  /*  override fun observeForecast(cityId: Int): Flow<WeatherForecast> {
         return db.weatherDao().observeForecast(cityId).mapNotNull { entity ->
             entity?.forecastJson?.let { gson.fromJson(it, WeatherForecast::class.java) }
         }
     }
+*/
+
+    override fun observeForecast(cityId: Int): Flow<WeatherForecast> {
+        val isArabic = Locale.getDefault().language == "ar"
+
+        return db.weatherDao().observeForecast(cityId).mapNotNull { entity ->
+            entity?.forecastJson?.let { json ->
+                val rawForecast = gson.fromJson(json, WeatherForecast::class.java)
+
+                rawForecast.copy(
+                    city = rawForecast.city.copy(
+                        name = if (isArabic) rawForecast.city.nameAr else rawForecast.city.name,
+                        countryName = if (isArabic) rawForecast.city.countryNameAr else rawForecast.city.countryName
+                    ),
+                    current = rawForecast.current.copy(
+                        weatherType = if (isArabic) rawForecast.current.weatherTypeAr else rawForecast.current.weatherType
+                    ),
+                    daily = rawForecast.daily.map { it.copy(
+                        weatherType = if (isArabic) it.weatherTypeAr else it.weatherType
+                    ) },
+                    hourly = rawForecast.hourly.map { it.copy(
+                        weatherType = if (isArabic) it.weatherTypeAr else it.weatherType
+                    ) }
+                )
+            }
+        }
+    }
 
     override suspend fun getCachedWeatherForecast(cityId: Int): WeatherForecast? {
-        return db.weatherDao().getForecast(cityId)?.forecastJson?.let {
+      /*  return db.weatherDao().getForecast(cityId)?.forecastJson?.let {
             gson.fromJson(it, WeatherForecast::class.java)
+        }*/
+        return db.weatherDao().getForecast(cityId)?.forecastJson?.let { json ->
+            val rawForecast = gson.fromJson(json, WeatherForecast::class.java)
+
+            // Apply localization manually (like in mapper)
+            val isArabic = Locale.getDefault().language == "ar"
+
+            rawForecast.copy(
+                city = rawForecast.city.copy(
+                    name = if (isArabic) rawForecast.city.nameAr else rawForecast.city.name,
+                    countryName = if (isArabic) rawForecast.city.countryNameAr else rawForecast.city.countryName
+                ),
+                current = rawForecast.current.copy(
+                    weatherType = if (isArabic) rawForecast.current.weatherTypeAr else rawForecast.current.weatherType
+                ),
+                daily = rawForecast.daily.map { it.copy(
+                    weatherType = if (isArabic) it.weatherTypeAr else it.weatherType
+                ) },
+                hourly = rawForecast.hourly.map { it.copy(
+                    weatherType = if (isArabic) it.weatherTypeAr else it.weatherType
+                ) }
+            )
         }
     }
 

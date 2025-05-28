@@ -33,7 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -137,16 +137,29 @@ fun MainScreen(
 ) {
     val forecastState = viewModel.forecastState.value
     val citiesState = viewModel.citiesState.value
-    var showLocationPicker by remember { mutableStateOf(false) }
+    var showLocationPicker by rememberSaveable { mutableStateOf(false) }
+    var initialLoadDone by rememberSaveable { mutableStateOf(false) }
+    var autoOpenedSheet by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        viewModel.loadCities()
-        viewModel.loadLastCityForecast()
+    LaunchedEffect(initialLoadDone) {
+        if (!initialLoadDone) {
+            viewModel.loadCities()
+            viewModel.loadLastCityForecast()
+            initialLoadDone = true
+        }
     }
 
-    if (showLocationPicker && citiesState is WeatherUiState.Success) {
+    val cities = (citiesState as? WeatherUiState.Success)?.data
+    LaunchedEffect(cities, forecastState) {
+        if (!autoOpenedSheet && forecastState !is WeatherUiState.Success && !cities.isNullOrEmpty()) {
+            showLocationPicker = true
+            autoOpenedSheet = true
+        }
+    }
+
+    if (showLocationPicker && !cities.isNullOrEmpty()) {
         LocationPickerBottomSheet(
-            cities = citiesState.data,
+            cities = cities,
             onDismiss = { showLocationPicker = false },
             onCitySelected = { city ->
                 viewModel.saveSelectedCity(city.id)
@@ -171,7 +184,7 @@ fun MainScreen(
                 .fillMaxSize()
         ) {
             when (forecastState) {
-                is WeatherUiState.Idle, is WeatherUiState.Loading -> WeatherLoadingScreen()
+                is WeatherUiState.Idle, is WeatherUiState.Loading -> if (!showLocationPicker) WeatherLoadingScreen()
 
                 is WeatherUiState.Error -> WeatherErrorScreen(
                     message = forecastState.message ?: stringResource(R.string.error_unknown),
@@ -186,7 +199,7 @@ fun MainScreen(
                 }
             }
 
-            if (forecastState !is WeatherUiState.Success && citiesState is WeatherUiState.Success && !showLocationPicker) {
+            if (forecastState !is WeatherUiState.Success && cities != null && cities.isNotEmpty() && !showLocationPicker) {
                 WeatherEmptyScreen(
                     message = stringResource(R.string.select_location_prompt)
                 )
