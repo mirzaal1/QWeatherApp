@@ -1,6 +1,7 @@
 package com.mirzaali.qweatherapp.di
 
 import com.mirzaali.qweatherapp.data.repository.WeatherRepository
+import com.mirzaali.qweatherapp.domain.repository.WeatherRepositoryImpl
 import com.mirzaali.qweatherapp.domain.usecase.GetCitiesUseCase
 import com.mirzaali.qweatherapp.domain.usecase.GetWeatherForecastUseCase
 import dagger.Module

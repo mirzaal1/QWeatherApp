@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mirzaali.qweatherapp.domain.usecase.GetCitiesUseCase
 import com.mirzaali.qweatherapp.domain.usecase.GetWeatherForecastUseCase
+import com.mirzaali.qweatherapp.utils.ResponseResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,28 +22,33 @@ class WeatherViewModel @Inject constructor(
 
     fun loadCities() {
         viewModelScope.launch {
-            _uiState.value = WeatherUiState.Loading
-            try {
-                val cities = getCities()
-                _uiState.value = WeatherUiState.CitiesLoaded(cities)
-            } catch (e: Exception) {
-                _uiState.value = WeatherUiState.Error(e.message)
+            getCities().collect { result ->
+                when (result) {
+                    is ResponseResult.Loading -> _uiState.value = WeatherUiState.Loading
+                    is ResponseResult.Success -> _uiState.value =
+                        WeatherUiState.CitiesLoaded(result.data)
+
+                    is ResponseResult.Error -> _uiState.value = WeatherUiState.Error(result.message)
+                }
             }
         }
     }
 
     fun loadForecast(cityId: Int) {
         viewModelScope.launch {
-            _uiState.value = WeatherUiState.Loading
-            try {
-                val forecast = getWeatherForecast(cityId)
-                _uiState.value = WeatherUiState.ForecastLoaded(forecast)
-            } catch (e: Exception) {
-                _uiState.value = WeatherUiState.Error(e.message)
+            getWeatherForecast(cityId).collect { result ->
+                when (result) {
+                    is ResponseResult.Loading -> _uiState.value = WeatherUiState.Loading
+                    is ResponseResult.Success -> _uiState.value =
+                        WeatherUiState.ForecastLoaded(result.data)
+
+                    is ResponseResult.Error -> _uiState.value = WeatherUiState.Error(result.message)
+                }
             }
         }
     }
 }
+
 
 
 
