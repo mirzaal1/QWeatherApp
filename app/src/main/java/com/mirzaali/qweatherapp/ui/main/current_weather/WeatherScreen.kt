@@ -23,7 +23,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +47,8 @@ import com.mirzaali.qweatherapp.domain.model.WeatherForecast
 import com.mirzaali.qweatherapp.ui.components.CurrentWeatherCard
 import com.mirzaali.qweatherapp.ui.components.LanguageToggleButton
 import com.mirzaali.qweatherapp.ui.components.LocationPickerBottomSheet
+
+/*
 
 @Composable
 fun MainScreen(
@@ -76,7 +77,6 @@ fun MainScreen(
                     }
                 )
             }
-
             else -> {
                 showLocationPicker = false // Dismiss if not ready
             }
@@ -93,17 +93,6 @@ fun MainScreen(
                 onMenuClick = onMenuClick,
                 onLocationClick = { showLocationPicker = true }
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { showLocationPicker = true },
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = stringResource(R.string.select_location)
-                )
-            }
         }
     ) { padding ->
         Box(
@@ -131,6 +120,74 @@ fun MainScreen(
                 }
 
                 is WeatherUiState.CitiesLoaded -> WeatherEmptyScreen(
+                    message = stringResource(R.string.select_location_prompt)
+                )
+            }
+        }
+    }
+}
+*/
+
+
+@Composable
+fun MainScreen(
+    viewModel: WeatherViewModel = hiltViewModel(),
+    onMenuClick: () -> Unit,
+    onCardClick: () -> Unit
+) {
+    val forecastState = viewModel.forecastState.value
+    val citiesState = viewModel.citiesState.value
+    var showLocationPicker by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.loadCities()
+        viewModel.loadLastCityForecast()
+    }
+
+    if (showLocationPicker && citiesState is WeatherUiState.Success) {
+        LocationPickerBottomSheet(
+            cities = citiesState.data,
+            onDismiss = { showLocationPicker = false },
+            onCitySelected = { city ->
+                viewModel.saveSelectedCity(city.id)
+                viewModel.loadForecast(city.id)
+                showLocationPicker = false
+            }
+        )
+    }
+
+    Scaffold(
+        topBar = {
+            WeatherTopAppBar(
+                title = if (forecastState is WeatherUiState.Success) forecastState.data.city.name else stringResource(R.string.app_name),
+                onMenuClick = onMenuClick,
+                onLocationClick = { showLocationPicker = true }
+            )
+        }
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+        ) {
+            when (forecastState) {
+                is WeatherUiState.Idle, is WeatherUiState.Loading -> WeatherLoadingScreen()
+
+                is WeatherUiState.Error -> WeatherErrorScreen(
+                    message = forecastState.message ?: stringResource(R.string.error_unknown),
+                    onRetry = { viewModel.loadLastCityForecast() }
+                )
+
+                is WeatherUiState.Success -> WeatherContent(
+                    forecast = forecastState.data,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    onCardClick()
+                }
+            }
+
+            if (forecastState !is WeatherUiState.Success && citiesState is WeatherUiState.Success && !showLocationPicker) {
+                WeatherEmptyScreen(
                     message = stringResource(R.string.select_location_prompt)
                 )
             }

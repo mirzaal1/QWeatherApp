@@ -1,9 +1,7 @@
 package com.mirzaali.qweatherapp.ui.main.current_weather
 
-import com.mirzaali.qweatherapp.domain.model.City
-import com.mirzaali.qweatherapp.domain.model.WeatherForecast
 
-
+/*
 sealed class WeatherUiState {
 
     data object Loading : WeatherUiState()
@@ -15,4 +13,13 @@ sealed class WeatherUiState {
     data class Error(val message: String?) : WeatherUiState()
 
     data object Idle : WeatherUiState()
+}
+*/
+
+
+sealed class WeatherUiState<out T> {
+    object Idle : WeatherUiState<Nothing>()
+    object Loading : WeatherUiState<Nothing>()
+    data class Success<T>(val data: T) : WeatherUiState<T>()
+    data class Error(val message: String?) : WeatherUiState<Nothing>()
 }

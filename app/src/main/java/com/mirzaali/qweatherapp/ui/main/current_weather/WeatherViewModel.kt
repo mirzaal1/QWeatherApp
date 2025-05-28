@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mirzaali.qweatherapp.data.local.CityPreferenceDataStore
 import com.mirzaali.qweatherapp.domain.model.City
+import com.mirzaali.qweatherapp.domain.model.WeatherForecast
 import com.mirzaali.qweatherapp.domain.usecase.GetCachedForecastUseCase
 import com.mirzaali.qweatherapp.domain.usecase.GetCitiesUseCase
 import com.mirzaali.qweatherapp.domain.usecase.GetWeatherForecastUseCase
@@ -23,8 +24,16 @@ class WeatherViewModel @Inject constructor(private val getWeatherForecast: GetWe
                                            private val cityPrefs: CityPreferenceDataStore) :
     ViewModel() {
 
-    private val _uiState = mutableStateOf<WeatherUiState>(WeatherUiState.Idle)
-    val uiState: State<WeatherUiState> = _uiState
+   /* private val _uiState = mutableStateOf<WeatherUiState>(WeatherUiState.Idle)
+    val uiState: State<WeatherUiState> = _uiState*/
+
+    private val _forecastState = mutableStateOf<WeatherUiState<WeatherForecast>>(WeatherUiState.Idle)
+    val forecastState: State<WeatherUiState<WeatherForecast>> = _forecastState
+
+    private val _citiesState = mutableStateOf<WeatherUiState<List<City>>>(WeatherUiState.Idle)
+    val citiesState: State<WeatherUiState<List<City>>> = _citiesState
+
+
 
     private val _cities = mutableStateOf<List<City>>(emptyList())
     val cities: List<City> get() = _cities.value
@@ -43,63 +52,48 @@ class WeatherViewModel @Inject constructor(private val getWeatherForecast: GetWe
     }
 
     fun loadLastCityForecast() {
-        if (_uiState.value is WeatherUiState.ForecastLoaded || forecastJob?.isActive == true) return
+        if (forecastState.value is WeatherUiState.Success || forecastJob?.isActive == true) return
+
         forecastJob = viewModelScope.launch {
-            cityPrefs.selectedCityIdFlow.firstOrNull()
-                ?.let { cityId ->
-                    getCachedForecast(cityId).collect { result ->
-                        when (result) {
-                            is ResponseResult.Loading -> if (_uiState.value !is WeatherUiState.ForecastLoaded) {
-                                _uiState.value = WeatherUiState.Loading
-                            }
-
-                            is ResponseResult.Success -> {
-                                _uiState.value = WeatherUiState.ForecastLoaded(result.data)
-                            }
-
-                            is ResponseResult.Error -> if (_uiState.value !is WeatherUiState.ForecastLoaded) {
-                                _uiState.value = WeatherUiState.Error(result.message)
-                            }
-                        }
-                    }
-                }
-        }
-    }
-
-    fun loadCities() {
-        if (_uiState.value is WeatherUiState.CitiesLoaded || citiesJob?.isActive == true) return
-        citiesJob = viewModelScope.launch {
-            getCities().collect { result ->
-                when (result) {
-                    is ResponseResult.Loading -> if (_uiState.value !is WeatherUiState.CitiesLoaded) {
-                        _uiState.value = WeatherUiState.Loading
-                    }
-
-                    is ResponseResult.Success -> {
-                        _cities.value = result.data
-                        _uiState.value = WeatherUiState.CitiesLoaded(result.data)
-                    }
-
-                    is ResponseResult.Error -> if (_uiState.value !is WeatherUiState.CitiesLoaded) {
-                        _uiState.value = WeatherUiState.Error(result.message)
+            cityPrefs.selectedCityIdFlow.firstOrNull()?.let { cityId ->
+                getCachedForecast(cityId).collect { result ->
+                    _forecastState.value = when (result) {
+                        is ResponseResult.Loading -> WeatherUiState.Loading
+                        is ResponseResult.Success -> WeatherUiState.Success(result.data)
+                        is ResponseResult.Error -> WeatherUiState.Error(result.message)
                     }
                 }
             }
         }
     }
+
+
+    fun loadCities() {
+        if (citiesState.value is WeatherUiState.Success || citiesJob?.isActive == true) return
+
+        citiesJob = viewModelScope.launch {
+            getCities().collect { result ->
+                _citiesState.value = when (result) {
+                    is ResponseResult.Loading -> WeatherUiState.Loading
+                    is ResponseResult.Success -> WeatherUiState.Success(result.data)
+                    is ResponseResult.Error -> WeatherUiState.Error(result.message)
+                }
+            }
+        }
+    }
+
 
     fun loadForecast(cityId: Int) {
         forecastJob?.cancel()
         forecastJob = viewModelScope.launch {
             getWeatherForecast(cityId).collect { result ->
-                when (result) {
-                    is ResponseResult.Loading -> _uiState.value = WeatherUiState.Loading
-                    is ResponseResult.Success -> _uiState.value =
-                        WeatherUiState.ForecastLoaded(result.data)
-
-                    is ResponseResult.Error -> _uiState.value = WeatherUiState.Error(result.message)
+                _forecastState.value = when (result) {
+                    is ResponseResult.Loading -> WeatherUiState.Loading
+                    is ResponseResult.Success -> WeatherUiState.Success(result.data)
+                    is ResponseResult.Error -> WeatherUiState.Error(result.message)
                 }
             }
         }
     }
+
 }
