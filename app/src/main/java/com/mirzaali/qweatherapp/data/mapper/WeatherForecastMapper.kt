@@ -10,6 +10,7 @@ import com.mirzaali.qweatherapp.domain.model.CurrentWeather
 import com.mirzaali.qweatherapp.domain.model.DailyWeather
 import com.mirzaali.qweatherapp.domain.model.HourlyWeather
 import com.mirzaali.qweatherapp.domain.model.WeatherForecast
+import java.util.Locale
 
 fun WeatherForecastResponseDto.toDomain(): WeatherForecast {
     val result = Response.result
@@ -23,12 +24,14 @@ fun WeatherForecastResponseDto.toDomain(): WeatherForecast {
 }
 
 private fun WeatherResult.toCityInfo(): CityInfo {
+    val isArabic = Locale.getDefault().language == "ar"
+
     return CityInfo(
         id = city_id,
-        name = name,
+        name = if (isArabic) name_ar else name,
         nameAr = name_ar,
         country = country,
-        countryName = country_name,
+        countryName = if (isArabic) country_name_ar else country_name,
         countryNameAr = country_name_ar,
         latitude = latitude,
         longitude = longitude,
@@ -36,11 +39,14 @@ private fun WeatherResult.toCityInfo(): CityInfo {
     )
 }
 
+
 private fun CurrentWeatherDto.toDomain(): CurrentWeather {
+    val isArabic = Locale.getDefault().language == "ar"
+
     return CurrentWeather(
         temperature = temperature,
         feelsLike = feels_like,
-        weatherType = weather_type,
+        weatherType = if (isArabic) weather_type_ar else weather_type,
         weatherTypeAr = weather_type_ar,
         weatherIcon = weather_icon,
         humidity = humidity,
@@ -53,11 +59,20 @@ private fun CurrentWeatherDto.toDomain(): CurrentWeather {
         temperatureMax = temperature_max,
         clouds = clouds,
         pressure = pressure,
-        uvIndex = uv_index
+        uvIndex = uv_index,
+        rain = rain,
+        rainUnit = rain_unit ,
+        temperatureUnit = temperature_unit,
+        humidityUnit = humidity_unit,
+        windSpeedUnit = wind_power_unit,
+        visibilityUnit = visibility_unit,
+        pressureUnit = pressure_unit
     )
 }
 
 private fun DailyWeatherDto.toDomain(): DailyWeather {
+    val isArabic = Locale.getDefault().language == "ar"
+
     return DailyWeather(
         timestamp = timestamp,
         temperature = temperature,
@@ -77,7 +92,7 @@ private fun DailyWeatherDto.toDomain(): DailyWeather {
         rain = rain,
         windSpeed = wind_speed,
         windDirection = wind_direction,
-        weatherType = weather_type,
+        weatherType = if (isArabic) weather_type_ar else weather_type,
         weatherTypeAr = weather_type_ar,
         weatherIcon = weather_icon,
         sunrise = sunrise,
@@ -85,14 +100,16 @@ private fun DailyWeatherDto.toDomain(): DailyWeather {
     )
 }
 
+
 private fun HourlyDataDto.toHourlyList(): List<HourlyWeather> {
+    val isArabic = Locale.getDefault().language == "ar"
     return day_details.map {
         HourlyWeather(
             date = date,
             time = it.time,
             temperature = it.temperature,
             humidity = it.humidity,
-            weatherType = it.weather_type,
+            weatherType = if (isArabic) it.weather_type_ar else it.weather_type,
             weatherTypeAr = it.weather_type_ar,
             weatherIcon = it.weather_icon,
             timestamp = it.timestamp,
@@ -101,3 +118,4 @@ private fun HourlyDataDto.toHourlyList(): List<HourlyWeather> {
         )
     }
 }
+

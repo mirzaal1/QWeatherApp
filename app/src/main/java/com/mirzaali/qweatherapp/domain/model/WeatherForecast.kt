@@ -36,7 +36,14 @@ data class CurrentWeather(
     val temperatureMax: Double,
     val clouds: Int,
     val pressure: Int,
-    val uvIndex: String
+    val uvIndex: String,
+    val rain: Double,
+    val rainUnit: String,
+    val temperatureUnit: String,
+    val humidityUnit: String,
+    val windSpeedUnit: String,
+    val visibilityUnit: String,
+    val pressureUnit: String
 )
 
 data class DailyWeather(

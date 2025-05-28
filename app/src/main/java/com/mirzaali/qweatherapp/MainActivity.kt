@@ -1,53 +1,18 @@
 package com.mirzaali.qweatherapp
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.mirzaali.qweatherapp.navigation.NavGraph
 import com.mirzaali.qweatherapp.ui.theme.QWeatherAppTheme
+import com.mirzaali.qweatherapp.utils.localization.LanguageDataStore
+import com.mirzaali.qweatherapp.utils.localization.LocalizationUtils
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 
-/*
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            QWeatherAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
-        }
-    }
-}
-*/
-
-@Composable
-fun Greeting(name: String,
-             modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    QWeatherAppTheme {
-        Greeting("Android")
-    }
-}
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -61,4 +26,11 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun attachBaseContext(newBase: Context) {
+        val lang = runBlocking { LanguageDataStore.getLanguage(newBase) }
+        val localizedContext = LocalizationUtils.setLocale(newBase, lang)
+        super.attachBaseContext(localizedContext)
+    }
+
 }

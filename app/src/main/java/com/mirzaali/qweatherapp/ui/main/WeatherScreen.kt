@@ -1,26 +1,19 @@
 package com.mirzaali.qweatherapp.ui.main
 
-import androidx.compose.foundation.layout.Arrangement
+import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -38,39 +31,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mirzaali.qweatherapp.R
-import com.mirzaali.qweatherapp.domain.model.DailyWeather
-import com.mirzaali.qweatherapp.domain.model.HourlyWeather
 import com.mirzaali.qweatherapp.domain.model.WeatherForecast
 import com.mirzaali.qweatherapp.ui.components.CurrentWeatherCard
+import com.mirzaali.qweatherapp.ui.components.LanguageToggleButton
 import com.mirzaali.qweatherapp.ui.components.LocationPickerBottomSheet
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     viewModel: WeatherViewModel = hiltViewModel(),
-    onMenuClick: () -> Unit = {},
-    onLanguageSwitch: () -> Unit = {}
+    onMenuClick: () -> Unit = {
+    }
 ) {
     val uiState = viewModel.uiState.value
     var showLocationPicker by remember { mutableStateOf(false) }
 
-    // Load cities once on screen start
     LaunchedEffect(Unit) {
         viewModel.loadCities()
     }
 
-    // Show location picker if triggered and cities are loaded
     if (showLocationPicker) {
         when (uiState) {
             is WeatherUiState.CitiesLoaded -> {
@@ -96,8 +79,7 @@ fun MainScreen(
                     is WeatherUiState.ForecastLoaded -> uiState.forecast.city.name
                     else -> stringResource(R.string.app_name)
                 },
-                onMenuClick = onMenuClick,
-                onLanguageSwitch = onLanguageSwitch
+                onMenuClick = onMenuClick
             )
         },
         floatingActionButton = {
@@ -140,6 +122,31 @@ fun MainScreen(
     }
 }
 
+@SuppressLint("ContextCastToActivity")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun WeatherTopAppBar(
+    title: String,
+    onMenuClick: () -> Unit
+) {
+    val activity = LocalContext.current as? Activity
+    TopAppBar(
+        title = { Text(text = title) },
+        navigationIcon = {
+            IconButton(onClick = onMenuClick) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = stringResource(R.string.menu)
+                )
+            }
+        },
+        actions = {
+            activity?.let {
+                LanguageToggleButton(it)
+            }
+        }
+    )
+}
 
 
 @Composable
@@ -169,13 +176,11 @@ fun WeatherEmptyScreen(message: String = stringResource(R.string.no_data)) {
     }
 }
 
-
 @Composable
 private fun WeatherContent(
     forecast: WeatherForecast,
     modifier: Modifier = Modifier
 ) {
-    val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val scrollState = rememberScrollState()
 
     Column(
@@ -186,11 +191,15 @@ private fun WeatherContent(
 
         CurrentWeatherCard(
             current = forecast.current,
-            city = forecast.city,
-            isRtl = isRtl
+            city = forecast.city
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+
+    }
+}
+
+/*
+ Spacer(modifier = Modifier.height(24.dp))
 
         Text(
             text = stringResource(R.string.daily_forecast),
@@ -207,37 +216,6 @@ private fun WeatherContent(
             style = MaterialTheme.typography.titleLarge
         )
         HourlyForecastList(forecast.hourly)
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun WeatherTopAppBar(
-    title: String,
-    onMenuClick: () -> Unit,
-    onLanguageSwitch: () -> Unit
-) {
-    TopAppBar(
-        title = { Text(text = title) },
-        navigationIcon = {
-            IconButton(onClick = onMenuClick) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = stringResource(R.string.menu)
-                )
-            }
-        },
-        actions = {
-            IconButton(onClick = onLanguageSwitch) {
-                Icon(
-                    painter = painterResource(R.drawable.language),
-                    contentDescription = stringResource(R.string.change_language)
-                )
-            }
-        }
-    )
-}
-
 
 @Composable
 fun DailyForecastList(daily: List<DailyWeather>) {
@@ -271,7 +249,6 @@ fun DailyForecastList(daily: List<DailyWeather>) {
     }
 }
 
-
 @Composable
 fun HourlyForecastList(hourly: List<HourlyWeather>) {
     LazyRow(
@@ -300,13 +277,11 @@ fun HourlyForecastItem(hour: HourlyWeather) {
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Add image loading here for weatherIcon if needed
-
             Text(text = "${hour.temperature.toInt()}°", style = MaterialTheme.typography.bodyLarge)
 
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(text = hour.weatherType, style = MaterialTheme.typography.bodySmall)
         }
-    }
-}
+    }*/
+
