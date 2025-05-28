@@ -24,14 +24,12 @@ fun WeatherForecastResponseDto.toDomain(): WeatherForecast {
 }
 
 private fun WeatherResult.toCityInfo(): CityInfo {
-    val isArabic = Locale.getDefault().language == "ar"
-
     return CityInfo(
         id = city_id,
-        name = if (isArabic) name_ar else name,
+        name =  name,
         nameAr = name_ar,
         country = country,
-        countryName = if (isArabic) country_name_ar else country_name,
+        countryName = country_name,
         countryNameAr = country_name_ar,
         latitude = latitude,
         longitude = longitude,
@@ -41,12 +39,10 @@ private fun WeatherResult.toCityInfo(): CityInfo {
 
 
 private fun CurrentWeatherDto.toDomain(): CurrentWeather {
-    val isArabic = Locale.getDefault().language == "ar"
-
     return CurrentWeather(
         temperature = temperature,
         feelsLike = feels_like,
-        weatherType = if (isArabic) weather_type_ar else weather_type,
+        weatherType = weather_type,
         weatherTypeAr = weather_type_ar,
         weatherIcon = weather_icon,
         humidity = humidity,
@@ -71,8 +67,6 @@ private fun CurrentWeatherDto.toDomain(): CurrentWeather {
 }
 
 private fun DailyWeatherDto.toDomain(): DailyWeather {
-    val isArabic = Locale.getDefault().language == "ar"
-
     return DailyWeather(
         timestamp = timestamp,
         temperature = temperature,
@@ -92,7 +86,7 @@ private fun DailyWeatherDto.toDomain(): DailyWeather {
         rain = rain,
         windSpeed = wind_speed,
         windDirection = wind_direction,
-        weatherType = if (isArabic) weather_type_ar else weather_type,
+        weatherType =  weather_type,
         weatherTypeAr = weather_type_ar,
         weatherIcon = weather_icon,
         sunrise = sunrise,
@@ -102,14 +96,13 @@ private fun DailyWeatherDto.toDomain(): DailyWeather {
 
 
 private fun HourlyDataDto.toHourlyList(): List<HourlyWeather> {
-    val isArabic = Locale.getDefault().language == "ar"
     return day_details.map {
         HourlyWeather(
             date = date,
             time = it.time,
             temperature = it.temperature,
             humidity = it.humidity,
-            weatherType = if (isArabic) it.weather_type_ar else it.weather_type,
+            weatherType =  it.weather_type,
             weatherTypeAr = it.weather_type_ar,
             weatherIcon = it.weather_icon,
             timestamp = it.timestamp,
@@ -118,4 +111,68 @@ private fun HourlyDataDto.toHourlyList(): List<HourlyWeather> {
         )
     }
 }
+
+/*
+
+fun WeatherForecast.localize(locale: Locale): WeatherForecast {
+    val isArabic = locale.language == "ar"
+    return copy(
+        city = city.copy(
+            name = if (isArabic) city.nameAr else city.name,
+            countryName = if (isArabic) city.countryNameAr else city.countryName
+        ),
+        current = current.copy(
+            weatherType = if (isArabic) current.weatherTypeAr else current.weatherType
+        ),
+        daily = daily.map {
+            it.copy(weatherType = if (isArabic) it.weatherTypeAr else it.weatherType)
+        },
+        hourly = hourly.map {
+            it.copy(weatherType = if (isArabic) it.weatherTypeAr else it.weatherType)
+        }
+    )
+}
+*/
+
+fun WeatherForecast.localize(locale: Locale): WeatherForecast {
+    val isArabic = locale.language == "ar"
+    return copy(
+        city = city.localized(locale),
+        current = current.localized(locale),
+        daily = daily.map { it.localized(locale) },
+        hourly = hourly.map { it.localized(locale) }
+    )
+}
+
+fun CityInfo.localized(locale: Locale): CityInfo {
+    val isArabic = locale.language == "ar"
+    return copy(
+        name = if (isArabic) nameAr else name,
+        countryName = if (isArabic) countryNameAr else countryName
+    )
+}
+
+fun CurrentWeather.localized(locale: Locale): CurrentWeather {
+    val isArabic = locale.language == "ar"
+    return copy(
+        weatherType = if (isArabic) weatherTypeAr else weatherType
+    )
+}
+
+fun DailyWeather.localized(locale: Locale): DailyWeather {
+    val isArabic = locale.language == "ar"
+    return copy(
+        weatherType = if (isArabic) weatherTypeAr else weatherType
+    )
+}
+
+
+fun HourlyWeather.localized(locale: Locale): HourlyWeather {
+    val isArabic = locale.language == "ar"
+    return this.copy(
+        weatherType = if (isArabic) weatherTypeAr else weatherType
+    )
+}
+
+
 

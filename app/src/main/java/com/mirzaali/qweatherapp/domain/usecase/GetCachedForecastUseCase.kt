@@ -12,7 +12,9 @@ class GetCachedForecastUseCase @Inject constructor(
 ) {
     operator fun invoke(cityId: Int): Flow<ResponseResult<WeatherForecast>> = flow {
         emit(ResponseResult.Loading)
+
         val cached = repository.getCachedWeatherForecast(cityId)
+
         if (cached != null) {
             emit(ResponseResult.Success(cached))
         } else {

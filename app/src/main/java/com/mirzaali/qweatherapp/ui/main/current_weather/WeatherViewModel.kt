@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mirzaali.qweatherapp.data.local.CityPreferenceDataStore
+import com.mirzaali.qweatherapp.data.mapper.localize
 import com.mirzaali.qweatherapp.domain.model.City
 import com.mirzaali.qweatherapp.domain.model.WeatherForecast
 import com.mirzaali.qweatherapp.domain.usecase.GetCachedForecastUseCase
@@ -15,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,9 +25,6 @@ class WeatherViewModel @Inject constructor(private val getWeatherForecast: GetWe
                                            private val getCities: GetCitiesUseCase,
                                            private val cityPrefs: CityPreferenceDataStore) :
     ViewModel() {
-
-   /* private val _uiState = mutableStateOf<WeatherUiState>(WeatherUiState.Idle)
-    val uiState: State<WeatherUiState> = _uiState*/
 
     private val _forecastState = mutableStateOf<WeatherUiState<WeatherForecast>>(WeatherUiState.Idle)
     val forecastState: State<WeatherUiState<WeatherForecast>> = _forecastState
@@ -55,11 +54,12 @@ class WeatherViewModel @Inject constructor(private val getWeatherForecast: GetWe
         if (forecastState.value is WeatherUiState.Success || forecastJob?.isActive == true) return
 
         forecastJob = viewModelScope.launch {
+            val currentLocale = Locale.getDefault()
             cityPrefs.selectedCityIdFlow.firstOrNull()?.let { cityId ->
                 getCachedForecast(cityId).collect { result ->
                     _forecastState.value = when (result) {
                         is ResponseResult.Loading -> WeatherUiState.Loading
-                        is ResponseResult.Success -> WeatherUiState.Success(result.data)
+                        is ResponseResult.Success -> WeatherUiState.Success(result.data.localize(currentLocale))
                         is ResponseResult.Error -> WeatherUiState.Error(result.message)
                     }
                 }
@@ -72,10 +72,11 @@ class WeatherViewModel @Inject constructor(private val getWeatherForecast: GetWe
         if (citiesState.value is WeatherUiState.Success || citiesJob?.isActive == true) return
 
         citiesJob = viewModelScope.launch {
+            val currentLocale = Locale.getDefault()
             getCities().collect { result ->
                 _citiesState.value = when (result) {
                     is ResponseResult.Loading -> WeatherUiState.Loading
-                    is ResponseResult.Success -> WeatherUiState.Success(result.data)
+                    is ResponseResult.Success -> WeatherUiState.Success(result.data.localize(currentLocale))
                     is ResponseResult.Error -> WeatherUiState.Error(result.message)
                 }
             }
@@ -86,10 +87,11 @@ class WeatherViewModel @Inject constructor(private val getWeatherForecast: GetWe
     fun loadForecast(cityId: Int) {
         forecastJob?.cancel()
         forecastJob = viewModelScope.launch {
+            val currentLocale = Locale.getDefault()
             getWeatherForecast(cityId).collect { result ->
                 _forecastState.value = when (result) {
                     is ResponseResult.Loading -> WeatherUiState.Loading
-                    is ResponseResult.Success -> WeatherUiState.Success(result.data)
+                    is ResponseResult.Success -> WeatherUiState.Success(result.data.localize(currentLocale))
                     is ResponseResult.Error -> WeatherUiState.Error(result.message)
                 }
             }

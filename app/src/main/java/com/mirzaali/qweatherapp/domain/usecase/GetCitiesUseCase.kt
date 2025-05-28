@@ -14,7 +14,10 @@ class GetCitiesUseCase @Inject constructor(
     operator fun invoke(): Flow<ResponseResult<List<City>>> = flow {
         emit(ResponseResult.Loading)
 
-        val cached = repository.observeCities().firstOrNull().orEmpty()
+        val cached = repository.observeCities()
+            .firstOrNull()
+            .orEmpty()
+
         if (cached.isNotEmpty()) {
             emit(ResponseResult.Success(cached))
         }
@@ -22,12 +25,15 @@ class GetCitiesUseCase @Inject constructor(
         runCatching {
             repository.fetchAndCacheCities()
         }.onSuccess {
-            val updated = repository.observeCities().firstOrNull().orEmpty()
+            val updated = repository.observeCities()
+                .firstOrNull()
+                .orEmpty()
             emit(ResponseResult.Success(updated))
-        }.onFailure { e ->
-            if (cached.isEmpty()) {
-                emit(ResponseResult.Error(e.localizedMessage ?: "Unknown error", e))
-            }
         }
+            .onFailure { e ->
+                if (cached.isEmpty()) {
+                    emit(ResponseResult.Error(e.localizedMessage ?: "Unknown error", e))
+                }
+            }
     }
 }

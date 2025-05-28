@@ -5,18 +5,15 @@ import com.mirzaali.qweatherapp.domain.model.City
 import java.util.Locale
 
 fun CityDto.toDomain(): City {
-    val isArabic = Locale.getDefault().language == "ar"
-
     return City(
         id = city_id,
-        name = if (isArabic) name_ar else name,
+        name = name,
         arabicName = name_ar,
         countryCode = country,
-        countryName = if (isArabic) country_name_ar else country_name,
+        countryName = country_name,
         arabicCountryName = country_name_ar,
         coordinates = City.Coordinates(
-            latitude = latitude,
-            longitude = longitude
+            latitude = latitude, longitude = longitude
         ),
         timezoneOffset = utc_offset
     )
@@ -24,3 +21,14 @@ fun CityDto.toDomain(): City {
 
 fun List<CityDto>.toDomain(): List<City> = map { it.toDomain() }
 
+fun City.localize(locale: Locale): City {
+    val isArabic = locale.language == "ar"
+    return this.copy(
+        name = if (isArabic) arabicName else name,
+        countryName = if (isArabic) arabicCountryName else countryName
+    )
+}
+
+fun List<City>.localize(locale: Locale): List<City> {
+    return map { it.localize(locale) }
+}

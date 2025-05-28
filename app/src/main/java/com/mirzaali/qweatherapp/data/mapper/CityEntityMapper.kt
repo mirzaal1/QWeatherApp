@@ -2,22 +2,18 @@ package com.mirzaali.qweatherapp.data.mapper
 
 import com.mirzaali.qweatherapp.data.local.CityEntity
 import com.mirzaali.qweatherapp.domain.model.City
-import java.util.Locale
 
 
-fun CityEntity.toDomain(): City {
-    val isArabic = Locale.getDefault().language == "ar"
-    return City(
-        id = cityId,
-        name = if (isArabic) nameAr else name,
-        arabicName = nameAr,
-        countryCode = country,
-        countryName = if (isArabic) countryNameAr else countryName,
-        arabicCountryName = countryNameAr,
-        coordinates = City.Coordinates(latitude, longitude),
-        timezoneOffset = utcOffset
-    )
-}
+fun CityEntity.toDomain(): City = City(
+    id = cityId,
+    name = name,
+    arabicName = nameAr,
+    countryCode = country,
+    countryName = countryName,
+    arabicCountryName = countryNameAr,
+    coordinates = City.Coordinates(latitude, longitude),
+    timezoneOffset = utcOffset
+)
 
 fun City.toEntity(): CityEntity = CityEntity(
     id = id,
