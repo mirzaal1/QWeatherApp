@@ -1,4 +1,4 @@
-package com.mirzaali.qweatherapp.utils
+package com.mirzaali.qweatherapp.data
 
 
 sealed class ResponseResult<out T> {

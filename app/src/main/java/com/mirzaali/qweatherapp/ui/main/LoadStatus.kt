@@ -1,4 +1,4 @@
-package com.mirzaali.qweatherapp.ui.main.current_weather
+package com.mirzaali.qweatherapp.ui.main
 
 sealed class LoadStatus {
     data object Idle : LoadStatus()

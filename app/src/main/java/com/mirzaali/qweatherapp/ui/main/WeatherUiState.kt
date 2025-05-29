@@ -1,9 +1,9 @@
-package com.mirzaali.qweatherapp.ui.main.current_weather
+package com.mirzaali.qweatherapp.ui.main
 
 
 sealed class WeatherUiState<out T> {
-    object Idle : WeatherUiState<Nothing>()
-    object Loading : WeatherUiState<Nothing>()
+    data object Idle : WeatherUiState<Nothing>()
+    data object Loading : WeatherUiState<Nothing>()
     data class Success<T>(val data: T) : WeatherUiState<T>()
     data class Error(val message: String?) : WeatherUiState<Nothing>()
 }

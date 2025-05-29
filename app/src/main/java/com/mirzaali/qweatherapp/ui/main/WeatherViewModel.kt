@@ -1,4 +1,4 @@
-package com.mirzaali.qweatherapp.ui.main.current_weather
+package com.mirzaali.qweatherapp.ui.main
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -11,7 +11,7 @@ import com.mirzaali.qweatherapp.domain.model.WeatherForecast
 import com.mirzaali.qweatherapp.domain.usecase.GetCachedForecastUseCase
 import com.mirzaali.qweatherapp.domain.usecase.GetCitiesUseCase
 import com.mirzaali.qweatherapp.domain.usecase.GetWeatherForecastUseCase
-import com.mirzaali.qweatherapp.utils.ResponseResult
+import com.mirzaali.qweatherapp.data.ResponseResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.firstOrNull
@@ -63,7 +63,11 @@ class WeatherViewModel @Inject constructor(private val getWeatherForecast: GetWe
                 getCachedForecast(cityId).collect { result ->
                     _forecastState.value = when (result) {
                         is ResponseResult.Loading -> WeatherUiState.Loading
-                        is ResponseResult.Success -> WeatherUiState.Success(result.data.localize(locale))
+                        is ResponseResult.Success -> WeatherUiState.Success(
+                            result.data.localize(
+                                locale
+                            )
+                        )
                         is ResponseResult.Error -> WeatherUiState.Error(result.message)
                     }
                 }

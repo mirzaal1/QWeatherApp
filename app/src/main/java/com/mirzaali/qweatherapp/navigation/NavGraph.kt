@@ -27,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
@@ -37,8 +38,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.mirzaali.qweatherapp.R
-import com.mirzaali.qweatherapp.ui.main.current_weather.MainScreen
-import com.mirzaali.qweatherapp.ui.main.forecast.ForecastScreen
+import com.mirzaali.qweatherapp.ui.main.MainScreen
+import com.mirzaali.qweatherapp.ui.theme.drawerBg
 
 @Composable
 fun NavGraph(
@@ -59,12 +60,7 @@ fun NavGraph(
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        AppDrawerContent(
-            onForecastClick = {
-                isDrawerOpen = false
-                navController.navigate("forecast")
-            }
-        )
+        AppDrawerContent()
 
         Box(
             modifier = Modifier
@@ -91,12 +87,8 @@ fun NavGraph(
             ) {
                 composable("main") {
                     MainScreen(
-                        onMenuClick = { isDrawerOpen = !isDrawerOpen },
-                        onCardClick = { navController.navigate("forecast") }
+                        onMenuClick = { isDrawerOpen = !isDrawerOpen }
                     )
-                }
-                composable("forecast") {
-                    ForecastScreen(onBackPress = { navController.popBackStack() })
                 }
             }
         }
@@ -107,35 +99,35 @@ fun NavGraph(
 
 @Composable
 fun AppDrawerContent(
-    onForecastClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .width(260.dp)
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp)
+            .fillMaxSize()
+            .background(drawerBg)
+            .padding(top = 100.dp, start = 20.dp)
     ) {
 
-        Row(modifier = Modifier.padding(bottom = 32.dp)) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_launcher_background),
+                painter = painterResource(id = R.drawable.ic_launch),
                 contentDescription = null,
-                modifier = Modifier.size(40.dp)
+                tint = Color.Unspecified,
+                modifier = Modifier.size(200.dp)
             )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
 
-        DrawerItem("Forecast",R.drawable.ic_cloud , onForecastClick)
+        Spacer(modifier = Modifier.width(24.dp))
 
         // Dummy items
-        DrawerItem("Profile",R.drawable.language, {})
-        DrawerItem("Settings",R.drawable.language, {})
-        DrawerItem("Help", R.drawable.language, {})
+        DrawerItem(stringResource(R.string.menu_forecast), R.drawable.ic_cloud, { })
+        DrawerItem(stringResource(R.string.menu_profile), R.drawable.ic_pressure, {})
+        DrawerItem(stringResource(R.string.menu_settings), R.drawable.ic_max_temp, {})
+        DrawerItem(stringResource(R.string.menu_help), R.drawable.ic_visibility, {})
+
+        DrawerItem(stringResource(R.string.menu_forecast), R.drawable.ic_cloud, { })
+        DrawerItem(stringResource(R.string.menu_profile), R.drawable.ic_pressure, {})
+        DrawerItem(stringResource(R.string.menu_settings), R.drawable.ic_max_temp, {})
+        DrawerItem(stringResource(R.string.menu_help), R.drawable.ic_visibility, {})
+
     }
 }
 
@@ -156,12 +148,13 @@ fun DrawerItem(
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = null,
+            tint = Color.Unspecified,
             modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge, color = Color.White
         )
     }
 }

@@ -42,5 +42,10 @@
     <string name="now">الآن</string>
     <string name="label_daily_forecast">التوقعات اليومية</string>
 
+    <string name="menu_forecast">توقعات الطقس</string>
+    <string name="menu_profile">الملف الشخصي</string>
+    <string name="menu_settings">الإعدادات</string>
+    <string name="menu_help">مساعدة</string>
+
 
 </resources>

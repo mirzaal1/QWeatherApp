@@ -1,5 +1,7 @@
-package com.mirzaali.qweatherapp.ui.main.current_weather
+package com.mirzaali.qweatherapp.ui.main
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -39,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +55,7 @@ import com.mirzaali.qweatherapp.ui.components.CurrentWeatherCard
 import com.mirzaali.qweatherapp.ui.components.DailyForecastSection
 import com.mirzaali.qweatherapp.ui.components.DateNavigationRow
 import com.mirzaali.qweatherapp.ui.components.HourlyForecastSection
+import com.mirzaali.qweatherapp.ui.components.LanguageToggleButton
 import com.mirzaali.qweatherapp.ui.components.LocationPickerBottomSheet
 import com.mirzaali.qweatherapp.ui.components.WeatherDetailsList
 import com.mirzaali.qweatherapp.ui.components.WeatherInfoRow
@@ -59,11 +63,11 @@ import com.mirzaali.qweatherapp.ui.theme.BlackAlpha
 import com.mirzaali.qweatherapp.ui.theme.primary
 import java.util.Date
 
+@SuppressLint("ContextCastToActivity")
 @Composable
 fun MainScreen(
     viewModel: WeatherViewModel = hiltViewModel(),
-    onMenuClick: () -> Unit,
-    onCardClick: () -> Unit
+    onMenuClick: () -> Unit
 ) {
     val currentLocale = LocalConfiguration.current.locale
     val forecastState = viewModel.forecastState.value
@@ -112,6 +116,7 @@ fun MainScreen(
                 title = if (forecastState is WeatherUiState.Success) forecastState.data.city.name else stringResource(
                     R.string.selectcity
                 ),
+                languageButton = {LanguageToggleButton(activity = LocalContext.current as Activity)},
                 onMenuClick = onMenuClick,
                 onLocationClick = { showLocationPicker = true }
             )
@@ -132,9 +137,8 @@ fun MainScreen(
 
                 is WeatherUiState.Success ->
                     DetailedForecastCardFromModel(
-                        forecastState.data,
-                        onPreviousClick = {},
-                        onNextClick = {})
+                        forecastState.data
+                    )
             }
         }
     }
@@ -144,6 +148,7 @@ fun MainScreen(
 @Composable
 private fun WeatherTopAppBar(
     title: String,
+    languageButton: @Composable () -> Unit,
     onMenuClick: () -> Unit,
     onLocationClick: () -> Unit
 ) {
@@ -189,6 +194,9 @@ private fun WeatherTopAppBar(
                 )
             }
         },
+        actions = {
+            languageButton()
+        },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color(0xFF4A0D36),
             titleContentColor = Color.White
@@ -220,13 +228,10 @@ fun WeatherErrorScreen(message: String,
 @Composable
 fun DetailedForecastCardFromModel(
     forecast: WeatherForecast,
-    contentPadding: PaddingValues = PaddingValues(),
-    onPreviousClick: () -> Unit,
-    onNextClick: () -> Unit,
-
+    contentPadding: PaddingValues = PaddingValues()
 ) {
     val current = forecast.current
-
+    var currentIndex by rememberSaveable { mutableStateOf(0) }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -273,8 +278,8 @@ fun DetailedForecastCardFromModel(
                     DateNavigationRow(
                         date = Date(),
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        onPreviousClick = onPreviousClick,
-                        onNextClick = onNextClick
+                        onPreviousClick = {},
+                        onNextClick = {}
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))

@@ -2,7 +2,7 @@ package com.mirzaali.qweatherapp.domain.usecase
 
 import com.mirzaali.qweatherapp.data.repository.WeatherRepository
 import com.mirzaali.qweatherapp.domain.model.City
-import com.mirzaali.qweatherapp.utils.ResponseResult
+import com.mirzaali.qweatherapp.data.ResponseResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
