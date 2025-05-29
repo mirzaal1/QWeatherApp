@@ -26,7 +26,7 @@ fun WeatherForecastResponseDto.toDomain(): WeatherForecast {
 private fun WeatherResult.toCityInfo(): CityInfo {
     return CityInfo(
         id = city_id,
-        name =  name,
+        name = name,
         nameAr = name_ar,
         country = country,
         countryName = country_name,
@@ -57,7 +57,7 @@ private fun CurrentWeatherDto.toDomain(): CurrentWeather {
         pressure = pressure,
         uvIndex = uv_index,
         rain = rain,
-        rainUnit = rain_unit ,
+        rainUnit = rain_unit,
         temperatureUnit = temperature_unit,
         humidityUnit = humidity_unit,
         windSpeedUnit = wind_power_unit,
@@ -87,7 +87,7 @@ private fun DailyWeatherDto.toDomain(): DailyWeather {
         rain = rain,
         windSpeed = wind_speed,
         windDirection = wind_direction,
-        weatherType =  weather_type,
+        weatherType = weather_type,
         weatherTypeAr = weather_type_ar,
         weatherIcon = weather_icon,
         sunrise = sunrise,
@@ -104,12 +104,14 @@ private fun HourlyDataDto.toHourlyList(): List<HourlyWeather> {
             time = it.time,
             temperature = it.temperature,
             humidity = it.humidity,
-            weatherType =  it.weather_type,
+            weatherType = it.weather_type,
             weatherTypeAr = it.weather_type_ar,
             weatherIcon = it.weather_icon,
             timestamp = it.timestamp,
             windSpeed = it.wind_power,
-            windDirection = it.wind_direction
+            windDirection = it.wind_direction,
+            windPowerUnit = it.wind_power_unit,
+            temperatureUnit = it.temperature_unit
         )
     }
 }

@@ -1,10 +1,7 @@
 package com.mirzaali.qweatherapp.ui.main.current_weather
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,18 +13,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -56,21 +47,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mirzaali.qweatherapp.R
-import com.mirzaali.qweatherapp.domain.model.HourlyWeather
 import com.mirzaali.qweatherapp.domain.model.WeatherForecast
 import com.mirzaali.qweatherapp.ui.components.CurrentWeatherCard
+import com.mirzaali.qweatherapp.ui.components.DailyForecastSection
+import com.mirzaali.qweatherapp.ui.components.DateNavigationRow
+import com.mirzaali.qweatherapp.ui.components.HourlyForecastSection
 import com.mirzaali.qweatherapp.ui.components.LocationPickerBottomSheet
 import com.mirzaali.qweatherapp.ui.components.WeatherDetailsList
 import com.mirzaali.qweatherapp.ui.components.WeatherInfoRow
-import com.mirzaali.qweatherapp.ui.components.getCompassDirection
-import com.mirzaali.qweatherapp.ui.components.roundedContainer
 import com.mirzaali.qweatherapp.ui.theme.BlackAlpha
-import com.mirzaali.qweatherapp.ui.theme.blueFont
-import com.mirzaali.qweatherapp.ui.theme.lightBg
 import com.mirzaali.qweatherapp.ui.theme.primary
-import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 @Composable
 fun MainScreen(
@@ -233,11 +220,12 @@ fun WeatherErrorScreen(message: String,
 @Composable
 fun DetailedForecastCardFromModel(
     forecast: WeatherForecast,
+    contentPadding: PaddingValues = PaddingValues(),
     onPreviousClick: () -> Unit,
-    onNextClick: () -> Unit
+    onNextClick: () -> Unit,
+
 ) {
     val current = forecast.current
-    val city = forecast.city
 
     Box(
         modifier = Modifier
@@ -268,8 +256,7 @@ fun DetailedForecastCardFromModel(
             Spacer(modifier = Modifier.height(12.dp))
 
             Surface(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxSize(),
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
                 color = Color.White,
                 tonalElevation = 2.dp,
@@ -278,233 +265,41 @@ fun DetailedForecastCardFromModel(
                 Column(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
-                        .padding(16.dp)
+                        .padding(bottom = contentPadding.calculateBottomPadding())
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp, horizontal = 12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(
-                            onClick = onPreviousClick,
-                            modifier = Modifier.roundedContainer(lightBg)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.KeyboardArrowLeft,
-                                contentDescription = "Prev"
-                            )
-                        }
-
-                        Text(
-                            text = SimpleDateFormat(
-                                "dd MMM, yyyy",
-                                Locale.getDefault()
-                            ).format(Date()),
-                            color = Color.Black,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier
-                                .roundedContainer(lightBg)
-                                .padding(horizontal = 40.dp, vertical = 12.dp)
-                        )
-
-                        IconButton(
-                            onClick = onNextClick,
-                            modifier = Modifier.roundedContainer(lightBg)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.KeyboardArrowRight,
-                                contentDescription = "Next"
-                            )
-                        }
-                    }
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    CurrentWeatherCard(forecast)
+
+                    DateNavigationRow(
+                        date = Date(),
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        onPreviousClick = onPreviousClick,
+                        onNextClick = onNextClick
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    CurrentWeatherCard(forecast, modifier = Modifier.padding(horizontal = 16.dp))
+
                     Spacer(modifier = Modifier.height(12.dp))
-                    WeatherInfoRow(current)
+
+                    WeatherInfoRow(current, modifier = Modifier.padding(horizontal = 16.dp))
+
                     Spacer(modifier = Modifier.height(12.dp))
+
                     WeatherDetailsList(current)
+
                     Spacer(modifier = Modifier.height(24.dp))
-                    HourlyForecastSection(forecast)
+
+                    HourlyForecastSection(forecast, modifier = Modifier.padding(horizontal = 16.dp))
+
                     Spacer(modifier = Modifier.height(24.dp))
+
+                    DailyForecastSection(forecast.daily)
+
                 }
             }
         }
     }
 }
 
-
-@DrawableRes
-fun getWeatherIcon(iconCode: String?): Int {
-    return when (iconCode) {
-        "01d", "01n" -> R.drawable.ic_sun
-        "02d", "02n" -> R.drawable.ic_cloud_sun
-        "03d", "03n", "04d", "04n" -> R.drawable.ic_cloud
-        "09d", "09n", "10d", "10n" -> R.drawable.ic_thunder
-        "11d", "11n" -> R.drawable.ic_thunder
-        "13d", "13n" -> R.drawable.ic_thunder
-        "50d", "50n" -> R.drawable.ic_thunder
-        else -> R.drawable.ic_cloud
-    }
-}
-
-@Composable
-fun HourlyForecastSection(forecast: WeatherForecast) {
-    val hourlyData = forecast.hourly
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(
-            text = stringResource(R.string.label_hourly_forecast),
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
-            color = blueFont
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        LazyRow(contentPadding = PaddingValues(horizontal = 8.dp)) {
-            items(hourlyData.take(12)) { hour ->
-                HourlyForecastCard(hour)
-            }
-        }
-    }
-}
-
-
-@Composable
-fun HourlyForecastCard(hour: HourlyWeather) {
-    val iconRes = getWeatherIcon(hour.weatherIcon)
-    val timeLabel = hour.time
-
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, Color.LightGray),
-        modifier = Modifier
-            .padding(horizontal = 4.dp)
-            .width(90.dp)
-            .height(160.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Text(
-                text = timeLabel,
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-                color = Color(0xFF272742)
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Icon(
-                painter = painterResource(id = iconRes),
-                contentDescription = null,
-                modifier = Modifier.size(28.dp),
-                tint = Color(0xFFD9AD5B)
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = "${hour.temperature.toInt()}°C",
-                fontSize = 16.sp,
-                color = Color(0xFF9D1C38),
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Icon(
-                painter = painterResource(id = R.drawable.ic_wind_dir),
-                contentDescription = null,
-                tint = Color.LightGray,
-                modifier = Modifier.size(14.dp)
-            )
-            Text(
-                text = getCompassDirection(hour.windDirection),
-                color = Color(0xFF272742),
-                fontSize = 12.sp
-            )
-
-            Text(
-                text = "${hour.windSpeed.toInt()} km/h",
-                color = Color(0xFF272742),
-                fontSize = 12.sp
-            )
-        }
-    }
-}
-
-
-@Composable
-private fun WeatherContent(
-    forecast: WeatherForecast,
-    modifier: Modifier = Modifier,
-    onCardClick: () -> Unit
-) {
-    val scrollState = rememberScrollState()
-
-    Column(
-        modifier = modifier
-            .verticalScroll(scrollState)
-            .padding(16.dp)
-    ) {
-
-        /* CurrentWeatherCard(
-             current = forecast.current,
-             city = forecast.city
-         ) {
-             onCardClick()
-         }*/
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = stringResource(R.string.hourly_forecast),
-            style = MaterialTheme.typography.titleLarge
-        )
-
-        HourlyForecastList(forecast.hourly)
-
-    }
-}
-
-@Composable
-fun HourlyForecastList(hourly: List<HourlyWeather>) {
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(hourly) { hour ->
-            HourlyForecastItem(hour)
-        }
-    }
-}
-
-@Composable
-fun HourlyForecastItem(hour: HourlyWeather) {
-    Card(
-        modifier = Modifier
-            .width(100.dp)
-            .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(2.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = hour.time, style = MaterialTheme.typography.bodySmall)
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(text = "${hour.temperature.toInt()}°", style = MaterialTheme.typography.bodyLarge)
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(text = hour.weatherType, style = MaterialTheme.typography.bodySmall)
-        }
-    }
-}

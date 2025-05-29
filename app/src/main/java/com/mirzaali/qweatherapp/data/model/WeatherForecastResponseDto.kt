@@ -104,15 +104,15 @@ data class HourlyDetailDto(
     val time_hr_qatar: String,
     val wind_power: Double,
     val wind_direction: Int,
-    val temperature_unit: String? = null,
-    val humidity_unit: String? = null,
-    val warning_text: String? = null,
-    val warning_text_ar: String? = null,
+    val temperature_unit: String,
+    val humidity_unit: String,
+    val warning_text: String,
+    val warning_text_ar: String,
     val rain: Double? = null,
     val pressure: Int? = null,
     val visibility: Int? = null,
-    val visibility_unit: String? = null,
-    val pressure_unit: String? = null,
-    val rain_unit: String? = null,
-    val wind_power_unit: String? = null
+    val visibility_unit: String,
+    val pressure_unit: String,
+    val rain_unit: String,
+    val wind_power_unit: String
 )

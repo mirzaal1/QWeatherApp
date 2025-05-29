@@ -50,16 +50,19 @@ import java.util.Locale
 
 
 @Composable
-fun CurrentWeatherCard(forecast: WeatherForecast){
+fun CurrentWeatherCard(forecast: WeatherForecast,
+                       modifier: Modifier = Modifier) {
     val current = forecast.current
     val city = forecast.city
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(1.dp, Color.LightGray, RoundedCornerShape(16.dp))
+        modifier = modifier.then(
+            Modifier
+                .fillMaxWidth()
+                .border(1.dp, Color.LightGray, RoundedCornerShape(16.dp))
+        )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -115,7 +118,7 @@ fun CurrentWeatherCard(forecast: WeatherForecast){
                     }
                 }
                 Image(
-                    painter = painterResource(id = R.drawable.ic_main_cloud),
+                    painter = painterResource(id = getWeatherIcon(current.weatherIcon)),
                     contentDescription = null,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
@@ -159,11 +162,30 @@ fun CurrentWeatherCard(forecast: WeatherForecast){
 }
 
 
+fun getWeatherIcon(iconCode: String): Int {
+    return when (iconCode) {
+        "01d", "01n" -> R.drawable.ic_clear_sky
+        "02d", "02n" -> R.drawable.ic_few_clouds
+        "03d", "03n" -> R.drawable.ic_scattered_clouds
+        "04d", "04n" -> R.drawable.ic_scattered_clouds
+        "09d", "09n" -> R.drawable.ic_shower_rain
+        "10d", "10n" -> R.drawable.ic_shower_rain
+        "11d", "11n" -> R.drawable.ic_thunderstorm
+        "13d", "13n" -> R.drawable.ic_snow
+        "50d", "50n" -> R.drawable.ic_mist
+        else -> R.drawable.ic_main_cloud
+    }
+}
+
+
 @Composable
-fun WeatherInfoRow(current: CurrentWeather) {
+fun WeatherInfoRow(current: CurrentWeather,
+                   modifier: Modifier = Modifier) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = modifier.then(
+            Modifier
+                .fillMaxWidth()
+        ),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -259,11 +281,14 @@ fun getUvLevel(uvIndex: Double?): String {
 }
 
 @Composable
-fun WeatherDetailsList(current: CurrentWeather) {
+fun WeatherDetailsList(current: CurrentWeather,
+                       modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
+        modifier = modifier.then(
+            Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+        )
     ) {
 
 

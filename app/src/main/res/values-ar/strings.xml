@@ -40,5 +40,7 @@
     <string name="label_detailed_forecast">التفاصيل المتقدمة للتوقعات</string>
     <string name="label_hourly_forecast">التوقعات كل ساعة</string>
     <string name="now">الآن</string>
+    <string name="label_daily_forecast">التوقعات اليومية</string>
+
 
 </resources>

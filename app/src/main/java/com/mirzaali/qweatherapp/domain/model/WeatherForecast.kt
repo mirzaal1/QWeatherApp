@@ -84,5 +84,7 @@ data class HourlyWeather(
     val weatherIcon: String?,
     val timestamp: Long,
     val windSpeed: Double,
-    val windDirection: Int
+    val windDirection: Int,
+    val windPowerUnit: String,
+    val temperatureUnit: String,
 )
