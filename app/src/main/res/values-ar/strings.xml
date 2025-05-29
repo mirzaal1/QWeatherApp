@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">تطبيق الطقس</string>
-
     <string name="select_location">اختر الموقع</string>
     <string name="loading">جارٍ التحميل..</string>
     <string name="error_unknown">خطأ غير معروف</string>
@@ -25,4 +24,21 @@
     <string name="uv_index">الأشعة فوق البنفسجية</string>
     <string name="sunrise">شروق الشمس</string>
     <string name="sunset">غروب الشمس</string>
+
+    <string name="selectcity">اختر المدينة</string>
+    <string name="uv_index_low">منخفض</string>
+    <string name="uv_index_moderate">متوسط</string>
+    <string name="uv_index_high">مرتفع</string>
+    <string name="uv_index_very_high">مرتفع جدًا</string>
+    <string name="uv_index_extreme">شديد للغاية</string>
+    <string name="uv_index_unknown">-</string>
+
+    <string name="label_humidity">الرطوبة</string>
+    <string name="label_uv_index">مؤشر الأشعة فوق البنفسجية</string>
+    <string name="label_pressure">الضغط</string>
+    <string name="label_visibility">الرؤية</string>
+    <string name="label_detailed_forecast">التفاصيل المتقدمة للتوقعات</string>
+    <string name="label_hourly_forecast">التوقعات كل ساعة</string>
+    <string name="now">الآن</string>
+
 </resources>

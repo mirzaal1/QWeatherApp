@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.mirzaali.qweatherapp.navigation.NavGraph
 import com.mirzaali.qweatherapp.ui.theme.QWeatherAppTheme
+import com.mirzaali.qweatherapp.utils.SetStatusBarColor
 import com.mirzaali.qweatherapp.utils.localization.LanguageDataStore
 import com.mirzaali.qweatherapp.utils.localization.LocalizationUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,6 +30,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             QWeatherAppTheme {
+
+                SetStatusBarColor(
+                    color = colorScheme.primary,
+                    darkIcons = false
+                )
                 Box(
                     modifier = Modifier
                         .fillMaxSize()

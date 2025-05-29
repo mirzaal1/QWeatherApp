@@ -23,4 +23,22 @@
     <string name="uv_index">UV</string>
     <string name="sunrise">Sunrise</string>
     <string name="sunset">Sunset</string>
+
+
+    <string name="selectcity">Select City</string>
+    <string name="uv_index_low">Low</string>
+    <string name="uv_index_moderate">Moderate</string>
+    <string name="uv_index_high">High</string>
+    <string name="uv_index_very_high">Very High</string>
+    <string name="uv_index_extreme">Extreme</string>
+    <string name="uv_index_unknown">-</string>
+
+    <string name="label_humidity">Humidity</string>
+    <string name="label_uv_index">UV Index</string>
+    <string name="label_pressure">Pressure</string>
+    <string name="label_visibility">Visibility</string>
+    <string name="label_detailed_forecast">Detailed forecast</string>
+    <string name="label_hourly_forecast">Hourly forecast</string>
+    <string name="now">Now</string>
+
 </resources>

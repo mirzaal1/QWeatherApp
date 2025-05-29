@@ -43,7 +43,8 @@ data class CurrentWeather(
     val humidityUnit: String,
     val windSpeedUnit: String,
     val visibilityUnit: String,
-    val pressureUnit: String
+    val pressureUnit: String,
+    val feelsLikeUnit: String,
 )
 
 data class DailyWeather(
@@ -69,7 +70,8 @@ data class DailyWeather(
     val weatherTypeAr: String,
     val weatherIcon: String,
     val sunrise: Long,
-    val sunset: Long
+    val sunset: Long,
+    val feelsLikeUnit: String,
 )
 
 data class HourlyWeather(

@@ -51,7 +51,7 @@ data class CurrentWeatherDto(
     val pressure_unit: String,
     val rain: Double,
     val rain_unit: String,
-    val uv_index: String
+    val uv_index: String,
 )
 
 data class DailyWeatherDto(

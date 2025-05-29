@@ -62,7 +62,8 @@ private fun CurrentWeatherDto.toDomain(): CurrentWeather {
         humidityUnit = humidity_unit,
         windSpeedUnit = wind_power_unit,
         visibilityUnit = visibility_unit,
-        pressureUnit = pressure_unit
+        pressureUnit = pressure_unit,
+        feelsLikeUnit = feels_like_unit
     )
 }
 
@@ -90,7 +91,8 @@ private fun DailyWeatherDto.toDomain(): DailyWeather {
         weatherTypeAr = weather_type_ar,
         weatherIcon = weather_icon,
         sunrise = sunrise,
-        sunset = sunset
+        sunset = sunset,
+        feelsLikeUnit = feels_like_unit
     )
 }
 
@@ -112,30 +114,7 @@ private fun HourlyDataDto.toHourlyList(): List<HourlyWeather> {
     }
 }
 
-/*
-
 fun WeatherForecast.localize(locale: Locale): WeatherForecast {
-    val isArabic = locale.language == "ar"
-    return copy(
-        city = city.copy(
-            name = if (isArabic) city.nameAr else city.name,
-            countryName = if (isArabic) city.countryNameAr else city.countryName
-        ),
-        current = current.copy(
-            weatherType = if (isArabic) current.weatherTypeAr else current.weatherType
-        ),
-        daily = daily.map {
-            it.copy(weatherType = if (isArabic) it.weatherTypeAr else it.weatherType)
-        },
-        hourly = hourly.map {
-            it.copy(weatherType = if (isArabic) it.weatherTypeAr else it.weatherType)
-        }
-    )
-}
-*/
-
-fun WeatherForecast.localize(locale: Locale): WeatherForecast {
-    val isArabic = locale.language == "ar"
     return copy(
         city = city.localized(locale),
         current = current.localized(locale),
