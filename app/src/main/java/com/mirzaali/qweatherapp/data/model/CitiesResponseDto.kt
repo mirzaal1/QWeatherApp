@@ -14,11 +14,6 @@ data class CityResult(
     val cities: Map<String, List<CityDto>>
 )
 
-data class CitiesByRegion(
-    val qatar: List<CityDto>,
-    val world: List<CityDto>
-)
-
 data class CityDto(
     val city_id: Int,
     val name: String,
