@@ -1,4 +1,4 @@
-package com.mirzaali.qweatherapp.domain.repository
+package com.mirzaali.qweatherapp.data.repository
 
 import com.google.gson.Gson
 import com.mirzaali.qweatherapp.data.api.WeatherApiService
@@ -6,9 +6,9 @@ import com.mirzaali.qweatherapp.data.local.ForecastEntity
 import com.mirzaali.qweatherapp.data.local.WeatherDatabase
 import com.mirzaali.qweatherapp.data.mapper.toDomain
 import com.mirzaali.qweatherapp.data.mapper.toEntity
-import com.mirzaali.qweatherapp.data.repository.WeatherRepository
 import com.mirzaali.qweatherapp.domain.model.City
 import com.mirzaali.qweatherapp.domain.model.WeatherForecast
+import com.mirzaali.qweatherapp.domain.repository.WeatherRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
