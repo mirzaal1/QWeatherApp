@@ -7,11 +7,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.mirzaali.qweatherapp.navigation.NavGraph
 import com.mirzaali.qweatherapp.ui.theme.QWeatherAppTheme
+import com.mirzaali.qweatherapp.ui.theme.topBarColor
 import com.mirzaali.qweatherapp.utils.SetStatusBarColor
 import com.mirzaali.qweatherapp.utils.localization.LanguageDataStore
 import com.mirzaali.qweatherapp.utils.localization.LocalizationUtils
@@ -28,13 +28,12 @@ class MainActivity : ComponentActivity() {
             QWeatherAppTheme {
 
                 SetStatusBarColor(
-                    color = colorScheme.primary,
+                    color = topBarColor,
                     darkIcons = false
                 )
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                      //  .padding(WindowInsets.safeDrawing.asPaddingValues())
                 ) {
                     val navController = rememberNavController()
                     NavGraph(navController)

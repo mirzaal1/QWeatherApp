@@ -46,6 +46,7 @@
     <string name="menu_profile">الملف الشخصي</string>
     <string name="menu_settings">الإعدادات</string>
     <string name="menu_help">مساعدة</string>
-
+    <string name="back">رجوع</string>
+    <string name="current_location">الموقع الحالي</string>
 
 </resources>

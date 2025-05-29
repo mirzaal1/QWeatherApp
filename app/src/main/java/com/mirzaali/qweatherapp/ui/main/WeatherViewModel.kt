@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mirzaali.qweatherapp.data.ResponseResult
 import com.mirzaali.qweatherapp.data.local.CityPreferenceDataStore
 import com.mirzaali.qweatherapp.data.mapper.localize
 import com.mirzaali.qweatherapp.domain.model.City
@@ -11,11 +12,11 @@ import com.mirzaali.qweatherapp.domain.model.WeatherForecast
 import com.mirzaali.qweatherapp.domain.usecase.GetCachedForecastUseCase
 import com.mirzaali.qweatherapp.domain.usecase.GetCitiesUseCase
 import com.mirzaali.qweatherapp.domain.usecase.GetWeatherForecastUseCase
-import com.mirzaali.qweatherapp.data.ResponseResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.Locale
 import javax.inject.Inject
 
@@ -75,8 +76,10 @@ class WeatherViewModel @Inject constructor(private val getWeatherForecast: GetWe
         }
     }
 
-    suspend fun hasCitySelected(): Boolean {
-        return cityPrefs.selectedCityIdFlow.firstOrNull() != null
+    fun getSelectedCityId(): Int? {
+        return runBlocking {
+            cityPrefs.selectedCityIdFlow.firstOrNull()
+        }
     }
 
     fun loadLastCityForecast() {

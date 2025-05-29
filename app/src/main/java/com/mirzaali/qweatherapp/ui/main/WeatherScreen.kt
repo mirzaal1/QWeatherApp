@@ -53,7 +53,6 @@ import com.mirzaali.qweatherapp.R
 import com.mirzaali.qweatherapp.domain.model.WeatherForecast
 import com.mirzaali.qweatherapp.ui.components.CurrentWeatherCard
 import com.mirzaali.qweatherapp.ui.components.DailyForecastSection
-import com.mirzaali.qweatherapp.ui.components.DateNavigationRow
 import com.mirzaali.qweatherapp.ui.components.HourlyForecastSection
 import com.mirzaali.qweatherapp.ui.components.LanguageToggleButton
 import com.mirzaali.qweatherapp.ui.components.LocationPickerBottomSheet
@@ -61,7 +60,7 @@ import com.mirzaali.qweatherapp.ui.components.WeatherDetailsList
 import com.mirzaali.qweatherapp.ui.components.WeatherInfoRow
 import com.mirzaali.qweatherapp.ui.theme.BlackAlpha
 import com.mirzaali.qweatherapp.ui.theme.primary
-import java.util.Date
+import com.mirzaali.qweatherapp.ui.theme.topBarColor
 
 @SuppressLint("ContextCastToActivity")
 @Composable
@@ -101,6 +100,7 @@ fun MainScreen(
     if (showLocationPicker && !cities.isNullOrEmpty()) {
         LocationPickerBottomSheet(
             cities = cities,
+            selectedCityId = viewModel.getSelectedCityId(),
             onDismiss = { showLocationPicker = false },
             onCitySelected = { city ->
                 viewModel.saveSelectedCity(city.id)
@@ -198,7 +198,7 @@ private fun WeatherTopAppBar(
             languageButton()
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFF4A0D36),
+            containerColor = topBarColor,
             titleContentColor = Color.White
         )
     )
@@ -273,14 +273,14 @@ fun DetailedForecastCardFromModel(
                         .padding(bottom = contentPadding.calculateBottomPadding())
                 ) {
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                   /* Spacer(modifier = Modifier.height(16.dp))
 
                     DateNavigationRow(
                         date = Date(),
                         modifier = Modifier.padding(horizontal = 16.dp),
                         onPreviousClick = {},
                         onNextClick = {}
-                    )
+                    )*/
 
                     Spacer(modifier = Modifier.height(16.dp))
 
